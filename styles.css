@@ -1,6 +1,5 @@
-.screen {
+.display {
+  height: 20px;
   width: 100px;
-  height: 30px;
-  border: 2px solid green;
-  color: red;
+  border: 1px solid black;
 }

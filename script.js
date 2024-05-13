@@ -55,18 +55,28 @@ const operatorButtons = document.querySelectorAll('.operator');
 
 const decimalButton = document.querySelector('.decimal');
 const equalButton = document.querySelector('.equals');
-const display = document.querySelector('.display')
-const clear = document.querySelector('.clear')
-const posOrNeg = document.querySelector('.pos-neg')
+const display = document.querySelector('.display');
+const clear = document.querySelector('.clear');
+const backspace = document.querySelector('.backspace');
 
 // Step 6 - Add eventListeners to HTML Variables as well as functions to go within the eventListeners
 
 function setFirstNumber() {
-  firstNumber = parseFloat(display.textContent)
+  const displayValue = display.textContent
+  if(displayValue.includes('-')) {
+    firstNumber = -parseFloat(display.textContent)
+  } else {
+    firstNumber = parseFloat(display.textContent)
+  }
 };
 
 function setSecondNumber() {
-  secondNumber = parseFloat(display.textContent)
+  const displayValue = display.textContent;
+  if(displayValue.includes('-')) {
+    secondNumber = -parseFloat(display.textContent)
+  } else {
+    secondNumber = parseFloat(display.textContent)
+  }
 };
 
 function setCurrentOperator(currentOperator) {
@@ -78,6 +88,12 @@ function clearAll() {
   secondNumber = ''
   operator = ''
   display.textContent = ''
+}
+
+function deleteCharacter() {
+  const displayValue = display.textContent
+  updatedDisplayValue = displayValue.substring(0, displayValue.length - 1);
+  return updatedDisplayValue;
 }
 
 function decimalNum() {
@@ -137,10 +153,18 @@ clear.addEventListener('click', () => {
   clearAll();
 });
 
+backspace.addEventListener('click', () => {
+  display.textContent = deleteCharacter()
+
+  if(operator !== undefined && operator !== '') {
+    setSecondNumber()
+  } else {
+    setFirstNumber()
+  }
+  console.log(firstNumber, secondNumber);
+})
+
 decimalButton.addEventListener('click', () => {
   decimalNum();
 });
 
-posOrNeg.addEventListener('click', () => {
-  positiveOrNegative()
-})

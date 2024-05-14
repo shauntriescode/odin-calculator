@@ -19,7 +19,7 @@ function remainder(num1, num2) {
   return num1 % num2
 }
 
-// Step 2 - Variables for Operator Function (To update later)
+// Step 2 - Variables for Operator Function
 let firstNumber;
 let secondNumber;
 let operator;
@@ -105,17 +105,6 @@ function decimalNum() {
 function roundTwoDecimal(num) {
   return Math.round(num * 100) / 100;
 }
-// Need to fix - Operations when using negative numbers are not correct
-function positiveOrNegative() {
-  const currentNumber = parseFloat(display.textContent)
-  
-  const sign = Math.sign(currentNumber)
-
-  const toggledNumber = sign === 0 ? currentNumber : currentNumber * -1;
-
-  display.textContent = toggledNumber
-}
-
 
 operatorButtons.forEach(button => {
   button.addEventListener('click', () => {
@@ -167,4 +156,40 @@ backspace.addEventListener('click', () => {
 decimalButton.addEventListener('click', () => {
   decimalNum();
 });
+
+// Step 8 Keyboard Support - Need to write HTML to indicate users of which keys presses perform what action - TO FIX
+
+const operators = ['+', '-', '*', '/', '%']
+
+document.addEventListener('keydown', e => {
+  const key = e.key;
+  const isNumber = /\d/.test(key);
+
+  // Checks if number 
+  if(isNumber) {
+    if (operator !== undefined && operator !== '') {
+      setSecondNumber()
+    } else {
+      display.textContent += key
+    }
+  }
+
+  if (operators.includes(key)) {
+    console.log('Operator key:', key);
+    console.log('operators.includes(key):', operators.includes(key));
+    setCurrentOperator(key);
+    console.log('After setCurrentOperator:', operator); // Log the value of `operator`
+    setFirstNumber();
+    console.log('After setFirstNumber:', firstNumber); // Log the value of `firstNumber`
+    display.textContent = '';
+  }
+
+  // // Checks if operator
+  // const operators = ['+', '-', '*', '/', '%']
+  // if(operators.includes(key)) {
+  //   setCurrentOperator(key)
+  //   setFirstNumber()
+  //   display.textContent = ''
+  // }
+})
 

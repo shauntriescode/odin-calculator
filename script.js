@@ -62,22 +62,24 @@ const backspace = document.querySelector('.backspace');
 // Step 6 - Add eventListeners to HTML Variables as well as functions to go within the eventListeners
 
 function setFirstNumber() {
-  const displayValue = display.textContent
-  if(displayValue.includes('-')) {
-    firstNumber = -parseFloat(display.textContent)
-  } else {
-    firstNumber = parseFloat(display.textContent)
+  if (firstNumber === undefined) {  // Ensure firstNumber is set only if it is undefined
+    const displayValue = display.textContent;
+    if (displayValue.includes('-')) {
+      firstNumber = -parseFloat(display.textContent);
+    } else {
+      firstNumber = parseFloat(display.textContent);
+    }
   }
-};
+}
 
 function setSecondNumber() {
   const displayValue = display.textContent;
-  if(displayValue.includes('-')) {
-    secondNumber = -parseFloat(display.textContent)
+  if (displayValue.includes('-')) {
+    secondNumber = -parseFloat(display.textContent);
   } else {
-    secondNumber = parseFloat(display.textContent)
+    secondNumber = parseFloat(display.textContent);
   }
-};
+}
 
 function setCurrentOperator(currentOperator) {
   operator = currentOperator
@@ -157,39 +159,55 @@ decimalButton.addEventListener('click', () => {
   decimalNum();
 });
 
-// Step 8 Keyboard Support - Need to write HTML to indicate users of which keys presses perform what action - TO FIX
+// Step 8 Keyboard Support
 
-const operators = ['+', '-', '*', '/', '%']
-
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', (e) => {
   const key = e.key;
-  const isNumber = /\d/.test(key);
 
-  // Checks if number 
-  if(isNumber) {
-    if (operator !== undefined && operator !== '') {
-      setSecondNumber()
+  console.log("Before Setting:", firstNumber, secondNumber);
+
+  // Numbers
+  if (!isNaN(key) || key === '.') {
+    display.textContent += key;
+    if (!operator || operator === '') {
+      firstNumber = parseFloat(display.textContent)
     } else {
-      display.textContent += key
+      setSecondNumber()
     }
   }
 
-  if (operators.includes(key)) {
-    console.log('Operator key:', key);
-    console.log('operators.includes(key):', operators.includes(key));
+
+  // Operators
+  if (['+', '-', '*', '/', '%'].includes(key)) {
     setCurrentOperator(key);
-    console.log('After setCurrentOperator:', operator); // Log the value of `operator`
     setFirstNumber();
-    console.log('After setFirstNumber:', firstNumber); // Log the value of `firstNumber`
     display.textContent = '';
+    console.log("After Setting:", firstNumber, secondNumber);
   }
 
-  // // Checks if operator
-  // const operators = ['+', '-', '*', '/', '%']
-  // if(operators.includes(key)) {
-  //   setCurrentOperator(key)
-  //   setFirstNumber()
-  //   display.textContent = ''
-  // }
-})
+  // Equals
+  if (key === 'Enter') {
+    const result = operate(firstNumber, secondNumber);
+    if (Number.isInteger(result)) {
+      display.textContent = result;
+    } else {
+      display.textContent = roundTwoDecimal(result);
+    }
+  }
 
+  // Clear
+  if (key === 'Escape') {
+    clearAll();
+    operate = ''
+  }
+
+  // Backspace
+  if (key === 'Backspace') {
+    display.textContent = deleteCharacter();
+    if (operator !== undefined && operator !== '') {
+      setSecondNumber();
+    } else {
+      setFirstNumber();
+    }
+  }
+});

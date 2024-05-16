@@ -86,17 +86,19 @@ function setCurrentOperator(currentOperator) {
 };
 
 function clearAll() {
-  firstNumber = ''
-  secondNumber = ''
-  operator = ''
+  firstNumber = undefined;
+  secondNumber = undefined;
+  operator = undefined;
   display.textContent = ''
 }
 
 function deleteCharacter() {
-  const displayValue = display.textContent
-  updatedDisplayValue = displayValue.substring(0, displayValue.length - 1);
+  const displayValue = display.textContent;
+  const updatedDisplayValue = displayValue.substring(0, displayValue.length - 1);
+  display.textContent = updatedDisplayValue;
   return updatedDisplayValue;
 }
+
 
 function decimalNum() {
   if(!display.textContent.includes('.')) {
@@ -131,40 +133,47 @@ numberButtons.forEach(button => {
 });
 
 equalButton.addEventListener('click', () => {
-  const result = operate()
-
-  if (Number.isInteger(result)) {
-    display.textContent = result;
-  } else {
-    display.textContent = roundTwoDecimal(result);
+  if (firstNumber !== undefined && secondNumber !== undefined && operator !== undefined) {
+    const result = operate();
+    if (Number.isInteger(result)) {
+      display.textContent = result;
+    } else {
+      display.textContent = roundTwoDecimal(result);
+    }
+    // Reset after calculation
+    firstNumber = result;
+    secondNumber = undefined;
+    operator = undefined;
   }
 });
 
+
 clear.addEventListener('click', () => {
-  clearAll();
+  clearAll()
 });
 
 backspace.addEventListener('click', () => {
-  display.textContent = deleteCharacter()
-
-  if(operator !== undefined && operator !== '') {
-    setSecondNumber()
+  const updatedDisplay = deleteCharacter();
+  if (operator !== undefined && operator !== '') {
+    if (updatedDisplay === '') {
+      secondNumber = undefined;
+    } else {
+      setSecondNumber();
+    }
   } else {
-    setFirstNumber()
+    if (updatedDisplay === '') {
+      firstNumber = undefined;
+    } else {
+      firstNumber = parseFloat(updatedDisplay);
+    }
   }
-  console.log(firstNumber, secondNumber);
-})
-
-decimalButton.addEventListener('click', () => {
-  decimalNum();
+  console.log(firstNumber, secondNumber, operator);
 });
 
-// Step 8 Keyboard Support
+// Step 8 Keyboard Support - Fix escape key crashing operations
 
 document.addEventListener('keydown', (e) => {
   const key = e.key;
-
-  console.log("Before Setting:", firstNumber, secondNumber);
 
   // Numbers
   if (!isNaN(key) || key === '.') {
@@ -182,32 +191,50 @@ document.addEventListener('keydown', (e) => {
     setCurrentOperator(key);
     setFirstNumber();
     display.textContent = '';
-    console.log("After Setting:", firstNumber, secondNumber);
   }
 
-  // Equals
-  if (key === 'Enter') {
-    const result = operate(firstNumber, secondNumber);
+ // Equals
+if (key === 'Enter') {
+  if (firstNumber !== undefined && secondNumber !== undefined && operator !== undefined) {
+    const result = operate();
     if (Number.isInteger(result)) {
       display.textContent = result;
     } else {
       display.textContent = roundTwoDecimal(result);
     }
+    // Reset after calculation
+    firstNumber = result;
+    secondNumber = undefined;
+    operator = undefined;
   }
+}
+
 
   // Clear
   if (key === 'Escape') {
-    clearAll();
-    operate = ''
+    firstNumber = '';
+    secondNumber = '';
+    operator = '';
+    display.textContent = '';
+    console.log(firstNumber, secondNumber, operator);
   }
 
   // Backspace
   if (key === 'Backspace') {
-    display.textContent = deleteCharacter();
+    const updatedDisplay = deleteCharacter();
     if (operator !== undefined && operator !== '') {
-      setSecondNumber();
+      if (updatedDisplay === '') {
+        secondNumber = undefined;
+      } else {
+        setSecondNumber();
+      }
     } else {
-      setFirstNumber();
+      if (updatedDisplay === '') {
+        firstNumber = undefined;
+      } else {
+        firstNumber = parseFloat(updatedDisplay);
+      }
     }
-  }
+    console.log(firstNumber, secondNumber, operator);
+  };
 });
